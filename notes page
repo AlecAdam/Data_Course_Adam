@@ -1,0 +1,64 @@
+Notes page
+
+ASSIGNMENT 2
+
+''=character
+list all files = list.files(path = 'assignments/')
+search all current subdirecrories = list.files(path = 'data/', recursive = T)
+only search current directories = list.files(path = 'data/', recursive = F)
+find pattern: list.files(path = 'Data/', pattern = '.txt', recursive = T)
+find pattern: list.files(path = 'Data/', pattern = '.csv') 
+find specific file = list.files(path = 'Data/', pattern = 'put file name here')
+^ means begging with to search (caps matter) = list.files(path = 'Data/', pattern = '^B')
+list.files(path = 'Data/', pattern = '^B', recursive = T)
+$ means end with = list.files(path = 'Data/', pattern = 'B$')
+list.files(path = 'Data/', pattern = 'B$', recursive = T)
+
+Print results on screen = list.files(path = 'Assignments/')
+save results in object = obj_1 <- list.files(path = 'Assignments/')
+number of files in object = no_of_filesn = length(obj_1)
+
+print on screen = echo = 'some'
+save in README.md = echo 'some' > README.md
+
+Read file into R = read 
+read.csv(put csv file here)
+Dimesions (# rows, # columns) = dim(file name)
+To count header as a row = df_rent_by_state = read.csv('Data/wide_income_rent.csv', header = F)
+dim(df_rent_by_state)
+
+
+week 3
+
+
+types of objects in r
+vector (one dim, dame type)
+matrix (two dim, same type of data)
+array (multiple dim, samt type)
+data frame ()
+list
+function
+
+make a matrix = mat <- matrix(1:6, nrow = 3)
+
+ vec_num <- (1:3, 2:4)
+ vec_num2 <- c(1, 2, 3, 4,)
+
+#loop
+
+while loop (keep eating icecream until you run out) 
+for loop (eat ice cream every monday )
+
+
+
+for (varible in vector) { ## i.e go through each varibale in the vector}
+for (index in c(1,2,3,4,5,6,7,8,9,10)) {print(index)}
+print(index[1])
+print(index[2])
+print(...)
+
+for (index in vec) {new_score <- index +1 print(new_score)}
+
+
+
+
