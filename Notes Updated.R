@@ -296,6 +296,10 @@ View()
 new_dat <- dat_peng[, c(1:8)]
 view(new_dat)
 
+#specific column
+bad_dat %>% 
+  select(-islands) %>% 
+  View()
 
 # how to make graphs
 
@@ -319,3 +323,150 @@ dat_peng %>%
   geom_point()
 
 ## aes = asthetic
+
+#number of coloum
+ncol(dataset)
+#number of row
+nrow()
+
+# delete na from data
+
+# make plot to show fat penguins and their species
+
+data(penguins)
+View(penguins)
+penguins %>% 
+  filter(body_mass_g > 5000)
+
+penguins %>% 
+  ggplot(aes (x = species, y = body_mass_g > 5000)) +
+  geom_dotplot(
+  )
+penguins %>% 
+  filter(body_mass_g > 5000) %>% 
+  ggplot(aes(x = body_mass_g, y = bill_length_mm,
+             color = species)) +
+  geom_point()
+# group by
+
+penguins %>% 
+  filter(body_mass_g > 3000) %>% 
+  group_by(species) %>% 
+  summarise(mean_body_mass_g = mean(body_mass_g)) %>% 
+  ggplot(aes(x = mean_body_mass_g, color = species)) +
+  geom_bar()
+
+
+penguins %>% 
+  ggplot(aes(x = bill_length_mm, y = body_mass_g, color = species)) +
+  geom_point() +
+  geom_smooth(method = 'lm', se = F)
+
+# pick colors
+penguins %>% 
+  ggplot(aes(x = bill_length_mm, y = body_mass_g, color = species)) +
+  geom_point() +
+  scale_color_manual(values = c('Gentoo' = 'pink', 'Chinstrap' = 'lightblue', 'Adelie' = 'grey4')) +
+  theme_dark() +
+  theme(axis.text = element_text(angle = 180, face = 'italic'))
+install.packages('ghibli')
+
+#bar grapgh
+penguins %>% 
+  ggplot(aes(x = flipper_length_mm)) +
+  geom_bar()
+  
+penguins %>% 
+  ggplot(aes(x = flipper_length_mm, 
+             y = body_mass_g)) +
+  geom_col()
+
+penguins %>% 
+  ggplot(aes(x = flipper_length_mm, 
+             y = body_mass_g,
+             fill = species)) +
+  geom_col()
+
+penguins %>% 
+  ggplot(aes(x = flipper_length_mm, 
+             y = body_mass_g,
+             fill = species)) +
+  geom_col(position = 'dodge')
+
+#Week 5
+
+#clean environment
+rm(list = ls())
+
+#graph
+data(penguins)
+View(penguins)
+# bar graph tells you count
+penguins %>% 
+  ggplot(aes(x = species, y = body_mass_g)) +
+  geom_bar(stat = 'identity')
+
+penguins %>% 
+  ggplot(aes(x = species, y = body_mass_g)) +
+  geom_col(position = 'dodge')
+
+penguins %>% 
+  group_by(species) %>% 
+  summarise(max_mass = mean(body_mass_g, na.rm = T))
+
+penguins %>% 
+  ggplot(aes(x = species, fill =island)) +
+  geom_bar(stat = 'count', position = 'dodge')
+
+# how to calc average
+
+penguins %>% 
+  group_by(species) %>% 
+  summarise(avg_mass = mean(body_mass_g, na.rm = T)) %>% 
+  ggplot(aes(x = species, y = avg_mass)) +
+  geom_col()
+#error bar
+
+penguins %>% 
+  group_by(species) %>% 
+  summarise(avg_mass = mean(body_mass_g, na.rm = T),
+            sd = sd(body_mass_g, na.rm = T)) %>% 
+  ggplot(aes(x = species, y = avg_mass)) +
+  geom_bar(stat = 'identity') +
+  geom_errorbar(aes(ymin = avg_mass - sd, 
+                    ymax = avg_mass + sd),
+                width = .02)
+
+# make an inrtresting graph for penguins data
+# do not yse geom_point
+penguins %>% 
+  ggplot(aes(x = sex, y = body_mass_g)) +
+  geom_col()
+
+
+penguins %>% 
+  ggplot(aes(x = body_mass_g, fill = species)) +
+  geom_density(alpha = 0.2)
+
+penguins %>% 
+  filter(!is.na(body_mass_g)) %>% 
+  ggplot(aes(x = body_mass_g, y = species)) +
+  geom_boxplot() +
+  geom_point() +
+  geom_jitter()
+
+penguins %>% 
+  filter(!is.na(body_mass_g)) %>% 
+  ggplot(aes(x = factor(year), y = body_mass_g)) +
+  geom_boxplot() +
+  geom_jitter()
+
+#show qr 
+
+install.packages('qrcode')
+library(qrcode)
+url <- 'https://www.amazon.com'
+qr <- qrcode::qr_code(url)
+plot(qr)
+
+              
