@@ -469,4 +469,99 @@ url <- 'https://www.amazon.com'
 qr <- qrcode::qr_code(url)
 plot(qr)
 
-              
+# make a plot with 'flipper_lenght' on the x axis
+# body max on y axis
+
+library('palmerpenguins')
+
+View(penguins)
+
+penguins %>% 
+  filter(!is.na(flipper_length_mm)) %>% 
+  filter(!is.na(body_mass_g)) %>% 
+  ggplot(aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_point() +
+  geom_path()
+
+penguins %>% 
+  filter(!is.na(flipper_length_mm)) %>% 
+  filter(!is.na(body_mass_g)) %>% 
+  ggplot(aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_density_2d()
+
+big_penguins <- penguins %>% 
+  filter(!is.na(flipper_length_mm)) %>% 
+  filter(!is.na(body_mass_g)) %>% 
+  ggplot(aes(x = body_mass_g, fill = species)) +
+  geom_histogram()
+  
+#how to save a plot as object
+
+big_penguins <- penguins %>% 
+  filter(!is.na(flipper_length_mm)) %>% 
+  filter(!is.na(body_mass_g)) %>% 
+  ggplot(aes(x = body_mass_g, fill = species)) +
+  geom_histogram()
+
+big_penguins
+
+#save graphs into csv
+
+ggsave("filename.jpg",plot = big_penguins)
+
+ggsave("file.name.jpg", plot = big_penguins, width = 6, height = 8,
+       dpi = 300)
+
+
+#load in data set, DatasaurusDozen.tsv
+
+DatasaurusDozen <- read_tsv('Data/DatasaurusDozen.tsv')
+head(DatasaurusDozen)
+View(DatasaurusDozen)
+
+
+# not tidyverse
+read.delim()
+
+#overview of data
+
+summary(DatasaurusDozen)
+
+DatasaurusDozen %>% 
+  summary()
+
+DatasaurusDozen %>% 
+  group_by(dataset) %>% 
+  summarise(mean = mean(x),
+            sd = sd(x),
+            max = max(x),
+            min = min(x))
+
+DatasaurusDozen %>% 
+  ggplot(aes(x = x,
+             fill = dataset)) +
+  geom_density()
+
+DatasaurusDozen %>% 
+  ggplot(aes(x = x,
+             y = y)) +
+  geom_point() +
+  facet_wrap(~ dataset)
+
+# install package GGally to show all data
+
+install.packages('GGally')
+library(GGally)
+ggpairs(penguins)
+
+#download package'gapminder
+
+install.packages(gapminder)
+
+#install kagglehub
+install.packages('kagglehub')
+
+
+
+# Download latest version
+path = kagglehub.dataset_download("crawford/80-cereals")

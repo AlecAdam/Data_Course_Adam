@@ -1,7 +1,8 @@
 #I. Read the cleaned_covid_data.csv file into an R data frame. (20 pts)
 
-data("cleaned_covid_data")
-View(cleaned_covid_data)
+cleanedread.csv(cleaned_covid_data.csv)
+
+
 #II. Subset the data set to just show states that begin with “A” and save this as an object called A_states. (20 pts)
 
 A_states <- cleaned_covid_data[grepl("^A", cleaned_covid_data$State), ] %>% 
