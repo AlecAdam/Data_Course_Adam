@@ -1,0 +1,4 @@
+I plan on comparing the nutritional values of different brands of ceral.The data set im using comes from kaggle and list 80 cereal brands. 
+The data set has all the nutritional values recorded with those being calories, fat, protein, sodium, fiber, carbs, sugars, and vitamins. 
+Im going to pick the most popular ceral brands and compare those instead of using all 80 brands. 
+My goal is to find the cereal which is the healthiest, unhealthiest, and a mix beatween healthy and having good taste.
