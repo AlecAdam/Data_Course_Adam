@@ -1,0 +1,1 @@
+I plan on comparing the nutritional values of different brands of ceral. I will look at the calories, sugar, protien, and more to see how healthy cereal actually is. To find what the healthiest brand is. The data set im using list 80 cereal brands and has all the nutritional values recorded. It has the calories, fat, protein, sodium, fiber, carbs, sugars, and vitamins.
