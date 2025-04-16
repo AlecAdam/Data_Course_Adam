@@ -1,0 +1,32 @@
+##Upload responses to the following as a numbered plaintext document to Canvas:
+##Are any of your predicted response values 
+#from your best model scientifically meaningless? Explain.
+
+summary(Mush$GrowthRate)
+
+# I dont think the data is scientifically meaningless. When looking
+#at the summary the data all falls within the min and max.
+#if the data was outside of it then i would think it is meaningless.
+
+
+##In your plots, did you find any non-linear relationships? 
+#Do a bit of research online and give a link 
+
+https://stats.stackexchange.com/questions/595101/methods-for-measuring-non-linear-correlation
+# I did find non linear reltionships in my plots. You can identify this
+#by ploting the data and seeing if there are any straight lines. If 
+#there are straight lines this means the data is non linear.
+
+
+##Write the code you would use to model the data found 
+#in “/Data/non_linear_relationship.csv” with a linear model 
+(there are a few ways of doing this)
+
+non <- read.csv("../../Data/non_linear_relationship.csv")
+View(non)
+
+mod5 <- glm(data = non,
+            formula = response ~ predictor)
+summary(mod5)
+
+
