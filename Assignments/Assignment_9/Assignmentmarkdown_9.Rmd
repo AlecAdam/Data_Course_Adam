@@ -1,0 +1,130 @@
+---
+title: "Assignment 9: Graduate School Admissions Analysis"
+output: html_document
+date: "2025-04-16"
+
+---
+These are the required packages
+```{r}
+library(tidyverse)
+library(caret)
+library(broom)
+library(knitr)
+library(pROC)
+library(ggplot2)
+library(modelr)
+library(easystats)
+library(GGally)
+```
+
+This is the data used
+```{r load-data}
+
+my_data <- read.csv("../../Data/GradSchool_Admissions.csv")
+
+summary(my_data)
+```
+
+Here is a ggpairs plot
+```{r ggpairs-plot, fig.width=10, fig.height=8}
+library(GGally)
+
+plot_multiple <- my_data %>%
+  select(admit, gre, gpa, rank) %>%
+  ggpairs()
+
+plot_multiple
+```
+
+here are other plots comparing the topics to admit,
+
+```{r admission-counts, fig.width=6, fig.height=4}
+plot_adm <- ggplot(my_data, aes(x = factor(admit), fill = factor(admit))) +
+  geom_bar() +
+  labs(title = "Admission Counts")
+plot_adm
+```
+
+
+```{r gre-by-admission, fig.width=6, fig.height=4}
+plot_gpa <- ggplot(my_data, aes(x = gre, fill = factor(admit))) +
+  geom_histogram(bins = 30, alpha = 0.7, position = 'identity') +
+  labs(title = "GRE Scores by Admission")
+plot_gpa
+```
+
+```{r gpa-by-admission, fig.width=6, fig.height=4}
+ggplot(my_data, aes(x = gpa, fill = factor(admit))) +
+  geom_histogram(bins = 30, alpha = 0.7, position = 'identity') +
+  labs(title = "GPA by Admission")
+```
+
+```{r rank-by-admission, fig.width=6, fig.height=4}
+ggplot(my_data, aes(x = rank, fill = factor(admit))) +
+  geom_bar(position = "fill") +
+  labs(title = "Admission Rate by Rank (Proportional)", y = "Proportion")
+```
+
+here is my model with summary
+
+```{r model-full}
+model_full <- glm(admit ~ gre + gpa + rank, data = my_data, family = "binomial")
+
+
+summary(model_full)
+```
+This is the model in tidy format
+```{r tidy-model-output}
+library(broom)
+tidy(model_full)
+```
+
+
+
+```{r}
+set.seed(123)
+
+train_index <- createDataPartition(my_data$admit, p = 0.8, list = FALSE)
+train_data <- my_data[train_index, ]
+test_data <- my_data[-train_index, ]
+```
+```{r}
+model_train <- glm(admit ~ gre + gpa + rank, data = train_data, family = "binomial")
+
+summary(model_train)
+```
+
+The predicted probabilitites on the test data, with the matrix.
+```{r}
+pred_probs <- predict(model_train, test_data, type = "response")
+
+pred_class <- ifelse(pred_probs > 0.5, 1, 0)
+
+conf_matrix <- confusionMatrix(factor(pred_class), factor(test_data$admit))
+conf_matrix
+```
+The roc curve
+```{r}
+
+
+```{r roc-curve, fig.width=6, fig.height=4}
+
+roc_curve <- pROC::roc(test_data$admit, pred_probs)
+
+
+plot(roc_curve, main = "ROC Curve")
+
+
+roc_auc <- pROC::auc(roc_curve)
+roc_auc
+
+
+```
+A second model made being compared to the first one
+```{r}
+
+model_gre_gpa <- glm(admit ~ gre + gpa, data = train_data, family = "binomial")
+
+
+AIC(model_train, model_gre_gpa)
+```

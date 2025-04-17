@@ -1,0 +1,6 @@
+---
+title: "Graduate School Admissions Analysis"
+author: "Alec Adam"
+date: "`r Sys.Date()`"
+output: html_
+library(GGally)
