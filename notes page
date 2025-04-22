@@ -62,3 +62,12 @@ for (index in vec) {new_score <- index +1 print(new_score)}
 
 
 
+All packages
+
+ggplot
+ggally
+gganmimate
+tidyverse
+gapminder
+ggmap
+

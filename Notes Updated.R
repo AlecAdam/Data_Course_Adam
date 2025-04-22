@@ -3,11 +3,25 @@ git .
 git commit -m 'assign'
 git push
 
-
+#### all packages ####
+library(ggplot2)
+library(tidyverse)
+library(tidyr)
+library(leaflet)
+library(ggmap)
+library(GGally)
+library(gapminder)
+library(patchwork)
+library(gganimate)
+library(ggimage)
+library(readxl)
+library(easystats)
+library(janitor)
+library(skimr)
+library(measurements)
+library(MASS)
+library(caret)
 #Week 1
-
-
-
 
 
 
@@ -395,7 +409,7 @@ penguins %>%
 
 #Week 5
 
-#clean environment
+#clean environment ####
 rm(list = ls())
 
 #graph
@@ -505,7 +519,7 @@ big_penguins <- penguins %>%
 
 big_penguins
 
-#save graphs into csv
+#save graphs into csv####
 
 ggsave("filename.jpg",plot = big_penguins)
 
@@ -565,3 +579,839 @@ install.packages('kagglehub')
 
 # Download latest version
 path = kagglehub.dataset_download("crawford/80-cereals")
+
+#week 6
+
+penguins %>% 
+  filter(!is.na(bill_depth_mm),!is.na(body_mass_g), !is.na(sex)) %>% 
+  ggplot(aes(x =bill_depth_mm, y = body_mass_g,
+             color = sex)) +
+  geom_point(size = 3, alpha = 0.5) +
+  facet_wrap(~species) +
+  labs(x = 'Bill depth (mm)',
+      y = 'Body mass (g)',
+      color = 'sex') +
+  theme_bw() +
+  theme(axis.title = element_text(face = 'bold', size = 14),
+        strip.background = element_blank(),
+        strip.text = element_text(face = 'bold', size = 14),
+  F_color_viridis_d(end = .08)
+
+  
+# take a look at gapminder data, make graph, save to local
+
+View(gapminder)
+dim(gapminder)
+
+gapminder$year %>% unique()
+
+gap <- gapminder
+
+gap %>% 
+  ggplot(aes(x = pop, y = continent)) +
+  geom_boxplot()
+
+gap %>% 
+  ggplot(aes(x = pop, y = continent)) +
+  geom_dotplot()
+
+p1 <- gap %>% 
+  ggplot(aes (x = year,
+         y = lifeExp,
+         color = continent)) +
+  geom_point(aes(size = pop)) +
+  facet_wrap(~ continent)
+p1
+
+#save graph####
+ggsave('gap_graph.png', plot = p1)
+
+p2 <- p1 + theme()
+p3 <- p2 + theme_dark()
+
+p1 + p2
+p1 / p3
+(p1 + p2) / p3 + plot_annotation('Main title')
+
+c1 <- ggplot(mtcars, aes(wt, mpg)) + geom_point() + ggtitle('plot 1')
+c2 <- ggplot(mtcars, aes(disp, mpg)) + geom_point() + ggtitle('plot 1')
+c3 <- ggplot(mtcars, aes(cyl, mpg)) + geom_point() + ggtitle('plot 1')
+
+(c1 + c2) / c3 +
+  plot_annotation(
+    title = 'main title',
+    tag_levels = 'A')
+
+p3 + transition_time(time = year)
+
+p5 <- p1 +p2
+p5/p3
+(p1 + p2) / p3 + plot_annotation('Main title') +
+  
+#gg animate####
+
+View(gapminder)
+
+df <- gapminder
+
+p3 <- df %>%
+  ggplot(aes(x = gdpPercap,
+             y = lifeExp,
+             color = continent)) +
+  geom_point()
+p3
+
+p3 + transition_time(time = year) +
+  labs(title = 'year:{frame}')
+
+#make graph and animate it ####
+
+p4 <- df %>% 
+  ggplot(aes(x = lifeExp,
+             y = pop,
+             color = continent)) +
+  geom_point()
+p4
+
+# how to save graph with animation
+anim_save('p4.gif')
+
+
+df$country %>% unique()
+
+
+my_country <- c("China", "Malasia", "Singapore","Japan", "Nepal",
+                "Iceland", "Uganda", "Cote d'Ivoire", "Rwanda")
+df %>% 
+  mutate(my_country = case_when(country %in% my_country ~ country)) %>% 
+  view()
+
+df2 <- df %>% 
+  mutate(my_country = case_when(country %in% my_country ~ country)) %>% 
+  view()
+
+
+p5 <- df %>% 
+  mutate(my_country = case_when(country %in% my_country ~ country)) %>% 
+  ggplot(aes(x = gdpPercap, y = lifeExp,
+             color = continent)) +
+  geom_point() +
+  geom_text(aes(label = my_country))
+p5
+
+p5 + transition_time(time = year) +
+  labs(title = 'year:{frame_time}')
+
+
+#data cleaning####
+install ggmap
+install.packages("ggmap")
+ggmap::register_google(key = "<your-api-key>", write = TRUE)
+
+
+## https://www.appsilon.com/post/r-ggmap
+# plot the map
+ggmap(nyc_map)
+
+geocode("800 W Univeristy parkway, Orem, UT 84058")
+
+
+# read this data and plot rent for each state 
+# ugly data to clean ####
+
+df <- read.csv('data/wide_income_rent.csv')
+view(df)
+
+# step by step to clean data
+
+dat.ex <- data.frame(
+  ID = c(1,2,3),
+  Weight = c(78, 88, 100),
+  Height = c(167, 180, 155))
+dat.ex
+
+dat.ex %>% 
+  pivot_longer(cols = c(Weight, Height),
+                names_to = 'Measure',
+                values_to = 'value') %>% 
+                view()
+
+dat.ex %>% 
+  pivot_longer(cols = Height,
+               names_to = 'Height',
+               values_to = 'cm') %>% 
+  view()
+
+
+dat_long <- dat.ex %>% 
+  pivot_longer(cols = everything(),
+               names_to = 'measure',
+               values_to = 'value') %>% 
+  view()
+
+View(dat_long)
+
+dat_long %>% 
+  pivot_wider(names_from = 'measure',
+              values_from = 'value')
+  View(dat_long)
+
+# Week 7
+install leaflet and ggmap
+
+geocode('lisbon')
+
+leaflet() %>% 
+  addTiles() %>% 
+  addMarkers(lng = -9.14, lat = 38.7)
+
+
+df <- read_csv('Data/wide_income_rent.csv')
+View(df)
+# read data and plot rent for each state
+# make it a good format for plotting
+#hint pivot_longer , pivot_wider
+# x-axis = state, y-axis = rent, bar chart
+
+df <- read_csv('Data/wide_income_rent.csv')
+View(df)
+
+df %>% 
+  pivot_longer(cols = -variable,
+    names_to = 'state',
+               values_to ='value') %>% 
+  pivot_wider(names_from ='variable' ,
+              values_from ='value') %>% 
+  View()
+
+df %>% 
+  pivot_longer(cols = -variable,
+               names_to = 'state',
+               values_to ='value') %>% 
+  pivot_wider(names_from ='variable' ,
+              values_from ='value') %>%
+  ggplot(aes(x = rent, y = income)) +
+  geom_point() +
+  geom_text(aes(label = state))
+
+Datab <- table2
+
+Datab %>% 
+  pivot_wider(names_from ='type',
+              values_from ='count') %>% 
+  view()
+
+table3
+Data3 <- table3
+
+Data3 %>% 
+  separate(rate, c('col1','col2'))
+
+table1
+
+table4a
+table4b
+
+data4a <- table4a
+data4a %>% 
+  pivot_longer()
+
+
+
+## make table4a and table4b tide (like table1)
+
+table1
+table4a
+table4b
+
+
+
+#table 4a to 1
+table1
+table4a
+
+data1 <- table1
+data4a <- table4a
+
+data4a %>% 
+  pivot_longer( cols = -country,
+                names_to = 'year',
+                values_to = 'cases')
+#table 4b to look like 1
+data4b <- table4b
+
+data4b %>% 
+  pivot_longer(cols = -country,
+               names_to = 'year',
+               values_to = 'cases')
+
+# combine 4a and 4b
+table4_tidy <- full_join(data4a,data4b)
+
+
+# fix table 5 combine, seperate, delete columns
+table5
+data5 <- table5
+
+data5 %>% 
+  paste0(data5$century, data5$year)
+  paste0(data5$year, data5$country)
+  paste0(data5$year, data5$century, 'i')
+  paste0(data5$year, data5$century, 'i' sep = '')  
+
+data5 %>% 
+  separate(rate, c('cases', 'population')) %>% 
+   mutate(year = paste0(data5$century, data5$year)) %>% 
+   select(-century) %>%
+   View()
+
+table_5fixed <- data5 %>% 
+  separate(rate, c('cases', 'population'), convert = T) %>% 
+  mutate(year = paste0(data5$century, data5$year)) %>% 
+  select(-century)
+table_5fixed  
+
+## enter data to excel or google sheet
+## path ..//Exercises/Data_Entry_Case_Study.txt
+getwd()
+
+text <- read.delim('Exercises/Data_Entry_Case_Study.txt')
+#excel notes
+Data validation allows you to select a column and only allow  
+what you want to be entered
+
+## read in excel = .xlsx
+library(readxl)
+# Skip funciton skips the rows in excel
+
+dat <- read_xlsx('Data/messy_bp.xlsx', skip = 3)
+View(dat)
+
+# Week 8
+
+# remove a column this removed heart rate
+bp <- dat %>% 
+  select(-starts_with('HR'))
+
+# create a column
+bp %>%
+  pivot_longer(starts_with('BP'),  #select what you want
+               names_to = 'visit',  #change name
+               values_to = 'bp') %>% # puts data in new column
+  View()
+
+
+
+bp <- bp %>%
+  pivot_longer(starts_with('BP'),  #select what you want
+               names_to = 'visit',  #change name
+               values_to = 'bp') %>% 
+  mutate(visit = case_when(visit == 'BP...8'~ 1,
+         visit == 'BP...10'~ 2,
+         visit == 'BP...12'~ 3)) %>% 
+  separate(bp, into = c('systolic', 'diatolic'))
+View(bp)
+
+
+
+bp %>%
+  pivot_longer(starts_with('BP'),  #select what you want
+               names_to = 'visit',  #change name
+               values_to = 'bp') %>% 
+  mutate(visit = case_when(visit == 'BP...8'~ 1,
+         visit == 'BP...10'~ 2,
+         visit == 'BP...12'~ 3)) %>% 
+  separate(bp, into = c('systolic', 'diatolic')) %>% 
+  View()
+
+
+
+hr <- dat %>% 
+  select(- starts_with('BP'))
+View(hr)
+
+hr <- hr %>%
+  pivot_longer(starts_with('HR'),  #select what you want
+               names_to = 'visit',  #change name
+               values_to = 'hr') %>% 
+  mutate(visit = case_when(visit == 'HR...9'~ 1,
+                           visit == 'HR...11'~ 2,
+                           visit == 'HR...13'~ 3))
+  View(hr)
+  
+dat_join <- full_join(bp, hr)
+View(dat_join)
+
+
+head(dat_join)
+colnames(dat_join)
+
+dat_join$
+  
+library(janitor)
+clean_names()
+make_clean_names()
+
+
+make_clean_names('# of bacteria')
+make_clean_names('# of growth')
+make_clean_names(c(# of bacteria, '# of growth'))
+  
+)
+  
+
+dat <- read_xlsx('Data/messy_bp.xlsx', skip = 3)
+View(dat)
+
+bp <- dat %>% 
+  select(-starts_with('HR'))
+
+bp %>%
+  pivot_longer(starts_with('BP'),  #select what you want
+               names_to = 'visit',  #change name
+               values_to = 'bp') %>% 
+  View()
+
+
+
+dat <- read_xlsx('Data/messy_bp.xlsx', skip = 3)
+View(dat)
+
+for (i in 2:nrow(dat)) {
+  if(dat$pat_id[i] == dat$pat_id[i-1]) {
+    dat$pat_id[i] <- dat$pat_id[i] +1 
+}}
+
+duplicated()
+id <- c(1, 2, 3, 4, 4, 5)
+
+dat %>% 
+  mutate(id_fix = pat_id + cumsum(duplicated(pat_id))) %>% 
+  view()
+
+dat %>% 
+  arrange(`Year birth`) %>% 
+  View()
+
+pat_id <- c(1, 2, 3, 4, 4, 5)
+
+dat %>% 
+  clean_names() %>% 
+  arrange(`Year birth`) %>% 
+  
+)
+
+dat_join$race %>% unique()
+  
+  
+dat_join %>% 
+  mutate(Race = case_when(Race == 'caucasian' ~ 'White',
+                          Race == 'WHITE' ~ 'White,
+                          true ~ Race')) %>% View()
+dat_join %>% 
+  mutate(Race = case_when(Race == 'caucasian' | ~ 'White',
+                          Race == 'WHITE' ~ 'White,
+                          true ~ Race')) %>% View()
+
+| # or
+ # and
+
+dat_join %>% 
+  mutate(Race_new_3 = case_when(race == 'Asian'))
+
+# to see structure of data
+str()
+
+# back to numeric
+
+df <- dat_join %>% 
+  mutate(Race = case_when(Race == 'caucasian' | ~ 'White',
+                          Race == 'WHITE' ~ 'White,
+                          true ~ Race'))
+df$systolic <- as.numeric(systolic)
+
+df <- dat_join %>% 
+  mutate(Race = case_when(Race == 'caucasian' | ~ 'White',
+                          Race == 'WHITE' ~ 'White,
+                          true ~ Race')) %>% 
+  mutate(systolic = as.numeric(systolic),
+         diastolic = as.numeric(diastolic)) %>%
+  view()
+
+dat_join %>% 
+  mutate(Race = case_when(Race == 'caucasian' | ~ 'White',
+                          Race == 'WHITE' ~ 'White,
+                          true ~ Race')) %>% 
+  mutate(systolic = as.numeric(systolic),
+         diastolic = as.numeric(diastolic)) %>%
+  mutate(birthday = paste(year_birth, month_birth, day_birth, sep = '-')) %>%
+  select(-year_birth, -month_birth, -day_birth) %>% 
+  View()
+
+mm/d/y
+
+
+#delete columns
+use select(-)
+
+#make graph to show blood pressure changes throughout visit
+
+df_2 <- dat_join %>% 
+  ggplot(aes( x = visit, y = )) %>% 
+  geom_point() %>% 
+  view()
+
+df_2 %>% 
+  pivot_longer(cols = c('systolic', 'diastolic'),
+               names_to = 'bp_type,' values_to = 'bp')
+View(df_2)
+
+df_3 <- df_2 %>% 
+  pivot_longer(cols = c('systolic', 'diastolic'),
+               names_to = 'bp_type,' values_to = 'bp')
+df_3 %>% 
+  ggplot(aes(x = visit, y = bp, color = bp_type)) +
+  geom_path() +
+  facet_wrap(~bp_type) +
+  facet_grid(hispanic ~ race)
+
+
+
+
+## new data set
+
+Bird <- read.csv('Data/Bird_Measurements.csv')
+View(Bird)
+dim(Bird)
+
+# give overview show what percent of data is imputed
+library(skimr)
+
+skim(Bird)
+?skim
+
+# week 9
+
+# read Height.xlsx file and make it tidy
+
+library(readxl)
+library(measurements)
+height <- read_xlsx('Data/height.xlsx')
+View(height)
+
+height1 <- height
+View(height1)
+
+height1 %>% 
+  pivot_longer(everything(),
+               names_to = 'sex',
+               values_to = 'height') %>% 
+  separate(height, into = c('feet', 'inches'), convert = T) %>% 
+  mutate(inches_all = (feet*12) + inches)
+  mutate(cm = conv_unit(inches_all, from = 'inch', to = 'cm'))
+View(height1)
+
+height1 %>% 
+  ggplot(aes(x = cm, fill = sex)) +
+  geom_density()
+
+
+#statistical test
+
+t.test(cm ~ sex, data = height1) # campare means
+cor.test() # correlation
+glm()
+
+mod <- glm(data = dat_2,
+           formula = cm ~ sex)
+# left side is dependent right is predictor
+car_insurance_price = age + gender + education + .....
+
+#lm = linear model must be continuous data
+#glm = better one
+#t/f = true or false 
+
+# build a model to predict city (mpg in city) as a function of displ
+#(total volume oc cylander)
+
+View(mpg)
+cars <- mpg
+
+cars %>% 
+  ggplot(aes(x = displ, y = cty)) +
+  geom_point()
+
+mod <- glm(data = mpg,
+           formula = cty ~ displ)
+summary(mod)
+
+cty = 25.0015 + (-2.63)*displ
+
+cars %>% 
+  ggplot(aes(x = displ, y = cty)) +
+  geom_point() + 
+  geom_smooth(method = 'glm', se = F)
+
+str(mod)
+mod$model
+mod$formula
+mod$coefficients
+mod$fitted.values
+
+library(easystats)
+report(mod)
+performance(mod)
+# lower AIC better and closer value to 1 R2 is better
+
+
+# to check if assumptions are right
+check_model(mod)
+
+
+mod <- glm(data = mpg,
+           formula = cty ~ displ)
+names(mpg)
+
+mod2 <- glm(data = mpg,
+           formula = cty ~ displ + year)
+summary(mod2)
+
+mod3 <- glm(data = mpg,
+            formula = cty ~ displ + manufacturer)
+summary(mod3)
+
+mod4 <- glm(data = mpg,
+            formula = cty ~ displ + manufacturer + displ + model + trans
+            + cyl + hwy + fl + drv + class )
+
+mod1 <- glm(data = mpg,
+           formula = cty ~ displ)
+summary(mod1)
+
+mod2 <- glm(data = mpg,
+           formula = cty ~ displ + cyl)
+summary(mod2)
+
+mod3 <- glm(data = mpg,
+           formula = cty ~ displ * cyl)
+summary(mod3)
+
+
+mpg %>% 
+  ggplot(aes(x = displ, y = cty, color = factor(cyl))) +
+  geom_smooth(method = 'glm')
+
+
+compare_models(mod1, mod2, mod3)
+compare_performance(mod1, mod2, mod3)
+compare_performance(mod1, mod2, mod3) %>% plot()
+# want bigger r2 and smaller everything else
+
+# predict function
+
+predict(mod1, mpg)
+mod1$formula
+
+plot(mod1$fitted.values, predict(mod1, mpg))
+
+
+mpgg<-pred1 <- predict(mod2, mpg)
+mpgg<-pred2 <- predict(mod2, mpg)
+mpgg<-pred3 <- predict(mod3, mpg)
+
+mgpp %>% 
+  ggplot(aes(x = cty, y = pred1)) +
+  geom_point()
+
+mgpp %>% 
+  pivot_longer(starts_with('pred')) %>% 
+  ggplot(aes(x = displ, y = cty, color = factor(cyl))) +
+  geom_point() +
+  geom_point(aes(y = value), color = 'black') +
+  facet_wrap(~ name)
+
+# make your model 4 and compare with all other models and make prediction
+
+mod5 <- glm(data = mpg,
+            formula =  ~ )
+
+
+## does body weight vary significantly between penguins species
+library(palmerpenguins)
+peng <- penguins
+View(peng)
+
+glm(data = peng,
+    formula = body_mass_g ~ species)
+
+pengfat <- glm(data = peng,
+    formula = body_mass_g ~ species)
+summary(pengfat)
+
+peng$species <- relevel(peng$species, ref = 'Gentoo')
+peng$species <- factor(peng$species, levels = c('Gentoo', 'Chinstrap',
+                                                'Adelie'))
+summary(peng)
+
+names(peng)
+
+#create a new column with T/F
+
+peng1 <- peng %>% 
+  mutate(gentoo = case_when(species == 'Gentoo'~ TRUE,
+                            TRUE ~ FALSE))
+View(peng1)
+
+glm(data = peng1,
+    formula = gentoo ~ bill_length_mm + bill_depth_mm + flipper_length_mm + 
+      body_mass_g,
+    family = 'binomial')
+
+
+peng1 <- peng %>% 
+  mutate(gentoo = case_when(species == 'Gentoo'~ TRUE,
+                            TRUE ~ FALSE)) %>% 
+  glm(data = .,
+    formula = gentoo ~ bill_length_mm + bill_depth_mm + flipper_length_mm + 
+      body_mass_g,
+    family = 'binomial')
+View(peng1)
+
+
+mod <- glm(data = peng1,
+    formula = gentoo ~ bill_length_mm + bill_depth_mm + flipper_length_mm + 
+      body_mass_g,
+    family = 'binomial')
+
+predict(mod, peng, type = 'response')
+
+peng$pred <- predict(mod, peng, type = 'response')
+
+peng %>% 
+  ggplot(aes(x = body_mass_g, y = pred, color = species)) +
+  geom_point()
+
+pred <- peng %>%
+  mutate(outcome = case_when(pred < 0.01 ~ 'Not gentoo',
+                             pred > 0.75 ~ 'Gentoo')) %>% 
+  select(species, outcome) %>% 
+  mutate(accurate = case_when(species == 'Gentoo' & outcome == 'Gentoo' ~ TRUE,
+                              species != 'Gentoo' & outcome == 'Not Gentoo' ~ TRUE,
+                              TRUE ~ FALSE))
+
+pred %>% 
+  pluck('accurate') %>% 
+  sum()/nrow(pred)
+
+
+
+## Data/Gradschool_Admission.csv
+## build logical regression model and predict the admission of grad school
+
+admissions <- read.csv('Data/GradSchool_Admissions.csv')
+View(admissions)
+
+adm <- admissions
+View(adm)
+
+mod3 <- glm(data = adm,
+            formula = as.logical(admit ) ~ (gre + gpa) * rank,
+            family = 'binomial')
+
+cyl*displ = cyl + displ + cyl:displ
+
+as.logical(adm$admit)
+interaction(gre:rank, gpa:rank)
+names(adm)
+
+mod3
+
+adm$predict_mod3 <- predict(mod3, adm, type = 'response')
+
+compare_performance(mod1, mod2) %>% plot()
+
+gpa*rank = gpa + rank + gpa:rank
+
+dat %>% 
+  mutate(outcome = case_when(pred_1 > 0.4 ~ 'Admit',
+                             pred_1 >= 0.2 & pred_1 <= 0.4 ~ 'I dont know'
+                             pred-1 < O.2 ~ 'Not Admit')) %>% 
+  mutate(accurate = case_when(admit == 1 & outcome == 'Admit' ~ TRUE,
+                              admit == 0 & outcome == ' Not Admit' ~ TRUE,
+                              TRUE ~ FALSE)) %>% 
+  pluck('accurate') %>% 
+  sum()/nrow(dat)
+
+sum(pred$accurate)
+nrow()
+
+## Automatically chose best model
+
+library(MASS)
+
+full_model <- glm(data = dat,
+                  formula = as.logical(admit) ~
+                    gre*gpa*rank,
+                  family = 'binomial')
+full_model$formula
+summary(full_model)
+
+stepwise_mod <- stepAIC(full_model, direction = 'both')
+summary(stepwise_mod)
+
+stepwise$mod$formula
+
+best_model <- glm(data = dat,
+                  )
+compare_performance(mod1,mod2,best_model) %>% plot()
+
+dat$pred_2 <- predict(best_model, dat, type = 'response')
+
+pluck('accurate_2') %>% 
+  sum()/nrow(dat)
+
+
+## seperate data
+
+library(caret)
+
+createDataPartition()
+id <- createDataPartition(dat$admit, p = 0.8, list = F)
+dat_train <- dat[id, ]
+dim(dat_train)
+dim(dat)
+
+dat_test <- dat[-id,n]
+
+train_mod <- glm(data = dat,
+                 formula = stepwise_mod$formula,
+                 family = 'binomial')
+dat_test$pred <- predict(train_mod, dat_test, type = 'response')
+View(dat_test)
+
+
+## anova for each specfic variable 
+
+library(palmerpenguins)
+
+mod <- aov(data = penguins,
+           formula = body_mass_g ~ species + sex + year)
+summary(mod)
+
+mod_glm <- glm(data = penguins,
+           formula = body_mass_g ~ species)
+summary(mod_glm)
+
+
+# CREATE r markdown
+#makes html file for final project
+
+
+
+
+
+
+
+
+
+

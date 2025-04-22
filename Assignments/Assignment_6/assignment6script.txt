@@ -1,0 +1,87 @@
+#1. Cleans this data into tidy (long) form
+combine observations and hours coloumns
+plate <- read_csv("../../Data/BioLog_Plate_Data.csv")
+
+View(plate)
+#create new column = time, pivot longer
+# clean names
+# create a new column = type
+
+plate2 <- plate
+View(plate2)
+
+plate3 <- plate2 %>% 
+  pivot_longer(starts_with('Hr'),
+               names_to = 'Time',
+               values_to = 'absorbance')
+View(plate3)
+
+#remove hr and make numeric
+plate3 <- plate2 %>% 
+  pivot_longer(starts_with('Hr'),
+               names_to = 'Time',
+               values_to = 'absorbance') %>% 
+  mutate(Time = as.numeric(str_remove(Time, 'Hr_')))
+View(plate3)
+
+
+#2. Creates a new column specifying whether a sample is from soil or water
+
+plate4 <- plate3 %>% 
+  mutate(type = case_when(
+    `Sample ID` == "Clear_Creek" ~ 'water',
+    `Sample ID` == "Waste_Water" ~ 'water',
+    `Sample ID` == "Soil_2" ~ 'soil',
+    `Sample ID` == "Soil_1" ~ 'soil'))
+View(plate4)
+
+plate4 <- plate3 %>% 
+  mutate(type = case_when(
+    Sample.ID %in% c("Clear_Creek", "Waste_Water") ~ 'water'
+    Sample.ID %in% c("Soil_1", "Soil_2") ~ 'soil'))
+
+View(plate4)
+
+#3. Generates a plot that matches this one (note just plotting dilution == 0.1):
+
+plate_plot <- plate4 %>% 
+  filter(Dilution == 0.1)
+dim(plate_plot)
+
+plate_plot %>% 
+  ggplot(aes(x = Time, y = absorbance, color = type)) +
+  geom_smooth(se = F) +
+  facet_wrap(~ Substrate) +
+  labs(title = 'just dilution 0.1',
+       x = 'Time',
+       y = 'Absorbance',
+       color = 'type') +
+       theme_minimal()
+View(plate_plot)
+
+#4. Generates an animated plot that matches this one (absorbance values are mean of all 3 replicates for each group):
+#This plot is just showing values for the substrate “Itaconic Acid”
+
+plate_plotan <- plate4 %>% 
+  filter(Substrate == 'Itaconic Acid')
+View(plate_plotan)
+
+mean_abs <- plate_plotan %>% 
+  group_by(`Sample ID`, Dilution, Time) %>% 
+  summarise(mean_abs = mean(absorbance, na.rm = T))
+
+
+
+library(gganimate)
+mean_abs %>% 
+  ggplot(aes(x = Time, y = mean_abs, color = `Sample ID`)) +
+  geom_line() +
+  facet_wrap(~ Dilution) +
+  labs(x = 'Time',
+       y = 'Mean_absorbance',
+       color = 'Sample.ID') +
+  theme_minimal() +
+  transition_reveal(Time)
+
+
+View(means_abs)
